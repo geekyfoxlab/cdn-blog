@@ -1,0 +1,45 @@
+---
+interface Props {
+	id?: string;
+	src: ImageSource;
+	class?: string;
+	alt?: string;
+	position?: string;
+	basePath?: string;
+	sizes?: string;
+	widths?: number[];
+	priority?: boolean;
+}
+
+import { Image } from "astro:assets";
+import { type ImageSource, resolvePostImage } from "../../utils/image-utils";
+import { url } from "../../utils/url-utils";
+
+const {
+	id,
+	src,
+	alt,
+	position = "center",
+	basePath = "",
+	sizes,
+	widths,
+	priority = false,
+} = Astro.props;
+const className = Astro.props.class;
+const resolvedSource = resolvePostImage(src, basePath);
+const isLocal = resolvedSource && typeof resolvedSource !== "string";
+const stringSource = typeof resolvedSource === "string" ? resolvedSource : "";
+const isPublic = stringSource.startsWith("/");
+
+if (!resolvedSource && typeof src === "string" && src.trim() !== "") {
+	throw new Error(`无法解析本地图片：${src}`);
+}
+
+const imageClass = "w-full h-full object-cover";
+const imageStyle = `object-position: ${position}`;
+---
+<div id={id} class:list={[className, 'overflow-hidden relative']}>
+    <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
+    {isLocal && <Image src={resolvedSource} alt={alt || ""} class={imageClass} style={imageStyle} layout="constrained" sizes={sizes} widths={widths} priority={priority}/>}
+    {stringSource && <img src={isPublic ? url(stringSource) : stringSource} alt={alt || ""} class={imageClass} style={imageStyle} loading={priority ? "eager" : "lazy"} decoding={priority ? "sync" : "async"} fetchpriority={priority ? "high" : "auto"}/>}
+</div>

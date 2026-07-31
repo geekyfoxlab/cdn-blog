@@ -1,0 +1,102 @@
+---
+import { getEntry, render } from "astro:content";
+import ImageWrapper from "@components/misc/ImageWrapper.astro";
+import Markdown from "@components/misc/Markdown.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { url } from "@utils/url-utils";
+import { Icon } from "astro-icon/components";
+import { blogConfig } from "@/config/site";
+
+const aboutEntry = await getEntry("spec", "about");
+
+if (!aboutEntry) {
+	throw new Error("About page content not found");
+}
+
+const { Content } = await render(aboutEntry);
+const { author } = blogConfig;
+---
+
+<MainGridLayout
+	title="关于"
+	description="关于 Example Lab 博客、关注的技术方向和联系方式。"
+>
+	<article class="card-base px-6 py-8 md:px-9">
+		<header class="flex flex-col gap-6 sm:flex-row sm:items-center">
+			<ImageWrapper
+				src={author.avatar}
+				alt={author.avatarAlt}
+				class="h-24 w-24 shrink-0 rounded-xl"
+			/>
+			<div class="min-w-0">
+				<p class="mb-1 text-sm font-medium text-[var(--primary)]">
+					{blogConfig.title}
+				</p>
+				<h1 class="mb-2 text-3xl font-bold text-90">关于</h1>
+				<p class="text-50">{author.bio}</p>
+			</div>
+		</header>
+
+		<div class="my-7 border-t border-dashed border-[var(--line-divider)]"></div>
+
+		<Markdown class="mb-8">
+			<Content />
+		</Markdown>
+
+		<section aria-labelledby="technology-focus-heading">
+			<h2 id="technology-focus-heading" class="mb-4 text-xl font-bold text-90">
+				技术方向
+			</h2>
+			<ul class="grid gap-3 sm:grid-cols-2">
+				{author.technologyFocus.map((focus) => (
+					<li class="flex min-h-10 items-center gap-3 border-b border-dashed border-[var(--line-divider)] pb-3 text-75">
+						<Icon
+							name="material-symbols:check-circle-outline-rounded"
+							class="shrink-0 text-xl text-[var(--primary)]"
+						/>
+						<span>{focus}</span>
+					</li>
+				))}
+			</ul>
+		</section>
+
+		<section class="mt-8 grid gap-6 sm:grid-cols-2" aria-label="联系方式">
+			<div>
+				<h2 class="mb-2 flex items-center gap-2 text-lg font-bold text-90">
+					<Icon name="fa6-brands:github" class="text-xl" />
+					GitHub
+				</h2>
+				{author.githubUrl ? (
+					<a
+						href={author.githubUrl}
+						target="_blank"
+						rel="me noopener noreferrer"
+						class="link font-medium text-[var(--primary)]"
+					>
+						查看 GitHub 主页
+					</a>
+				) : (
+					<p class="text-50">GitHub 地址待补充</p>
+				)}
+			</div>
+
+			<div>
+				<h2 class="mb-2 flex items-center gap-2 text-lg font-bold text-90">
+					<Icon name="material-symbols:alternate-email-rounded" class="text-xl" />
+					联系
+				</h2>
+				<p class="text-50">{author.contact || "联系方式待补充"}</p>
+			</div>
+		</section>
+
+		<footer class="mt-8 border-t border-dashed border-[var(--line-divider)] pt-6">
+			<a
+				href={url("/")}
+				class="inline-flex items-center gap-2 font-medium text-[var(--primary)] link"
+			>
+				<Icon name="material-symbols:home-outline-rounded" class="text-xl" />
+				返回 Example Lab 主页
+			</a>
+		</footer>
+	</article>
+</MainGridLayout>

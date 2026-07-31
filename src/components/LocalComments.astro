@@ -1,0 +1,31 @@
+---
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+import { blogConfig } from "@/config/site";
+import LocalCommentsClient from "./LocalComments.svelte";
+
+interface Props {
+	postKey: string;
+}
+
+const { postKey } = Astro.props;
+---
+
+{
+	blogConfig.features.comments && (
+		<section
+			id="comments"
+			class="card-base mb-4 px-6 py-6 md:px-9"
+			aria-labelledby="comments-title"
+			data-pagefind-ignore
+		>
+			<h2
+				id="comments-title"
+				class="mb-5 text-xl font-bold text-black/90 transition dark:text-white/90"
+			>
+				{i18n(I18nKey.comments)}
+			</h2>
+			<LocalCommentsClient client:load postKey={postKey} />
+		</section>
+	)
+}

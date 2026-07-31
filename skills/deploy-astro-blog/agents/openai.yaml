@@ -1,0 +1,4 @@
+interface:
+  display_name: "一键部署 Astro 博客"
+  short_description: "创建并部署 Astro/Fuwari 博客到 GitHub 与 Cloudflare"
+  default_prompt: "使用 $deploy-astro-blog 创建并部署一个可长期维护的个人博客。"
